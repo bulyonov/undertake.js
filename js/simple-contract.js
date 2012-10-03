@@ -3,28 +3,28 @@
  * @description Some kind of contract programming
  */
 
-var Contract = (function() {
+var Contract = (function () {
 
     var Validator = {
-        isNumber: function( value ) {
+        isNumber: function (value) {
             return typeof value === 'number' || value instanceof Number;
         },
-        isString: function( value ) {
+        isString: function (value) {
             return typeof value === 'string' || value instanceof String;
         },
-        isFunction: function( value ) {
+        isFunction: function (value) {
             return typeof value === 'function' || value instanceof Function;
         },
-        isDate: function( value ) {
+        isDate: function (value) {
             return value instanceof Date;
         },
-        isInteger: function( value ) {
+        isInteger: function (value) {
             return Validator.isNumber(value) && value % 1 == 0;
         },
-        isFloat: function(value) {
+        isFloat: function (value) {
             return Validator.isNumber(value) && value % 1 != 0;
         },
-        isArray: function(value) {
+        isArray: function (value) {
             return value instanceof Array;
         }
     };
@@ -43,8 +43,8 @@ var Contract = (function() {
         return expects(this, arguments);
     };
 
-    Function.prototype.returns = function(resultCheck) {
-        return returns(this,resultCheck);
+    Function.prototype.returns = function (resultCheck) {
+        return returns(this, resultCheck);
     };
 
 
@@ -66,7 +66,7 @@ var Contract = (function() {
 
     function validateArray(actualArray, characteristicArray) {
         var result = true;
-        for (var i = 0; i < actualArray.length; i ++ ) {
+        for (var i = 0; i < actualArray.length; i++) {
             if (!validateSingleParam(actualArray[i], characteristicArray[i])) {
                 // console.log('Param #' + i + ' is invalid');
                 result = false;
@@ -76,19 +76,19 @@ var Contract = (function() {
     }
 
     function expects(fn, expectedArguments) {
-        return function() {
+        return function () {
             var actualArguments = arguments;
-            if (!validateArray(actualArguments,expectedArguments)) {
+            if (!validateArray(actualArguments, expectedArguments)) {
                 throw Error('Parameters are invalid');
             }
-            return fn.apply(this,arguments);
+            return fn.apply(this, arguments);
         };
     }
 
     function returns(fn, resultCheck) {
         return function () {
             var result = fn.apply(this, arguments);
-            if (!validateSingleParam(result,resultCheck)) {
+            if (!validateSingleParam(result, resultCheck)) {
                 throw Error('Result is invalid');
             }
             return result;
