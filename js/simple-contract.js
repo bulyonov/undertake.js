@@ -59,7 +59,27 @@ var Contract = (function () {
                 result = characteristic(actual);
                 break;
             case 'object':
+                result = validateRecursively(actual, characteristic);
                 break;
+        }
+        return result;
+    }
+
+    function validateRecursively(actual, characteristic) {
+        var result = true;
+        if (typeof actual === 'object') {
+            for (var key in characteristic) {
+                var cAttr = characteristic[key];
+                var aAttr = actual[key];
+                var cType = typeof cAttr;
+                if (cType !== 'object') {
+                    result = result && validateSingleParam(aAttr, cAttr);
+                } else {
+                    result = result && validateRecursively(aAttr, cAttr);
+                }
+            }
+        } else {
+            result = false;
         }
         return result;
     }
