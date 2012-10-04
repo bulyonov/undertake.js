@@ -3,7 +3,7 @@
  * @description Some kind of contract programming
  */
 
-var Contract = (function () {
+var Undertake = (function () {
 
     var Validator = {
         isNumber: function (value) {
