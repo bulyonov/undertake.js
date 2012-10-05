@@ -10,6 +10,7 @@
 
 **Undertake.js** is able to provide parameters with verification functions. It validates several types "from a box". They are:
 - strings;
+- functions;
 - numbers;
 - float numbers;
 - integer numbers;
