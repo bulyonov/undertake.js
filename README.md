@@ -54,3 +54,75 @@ sum(1.1, 2.2);</pre>
 }
 var newSum = Undertake.returns(sum, 'float');
 newSum(1.1, 2.2);</pre>
+
+### Parameter types and validation
+
+**Undertake** supports these parameter types:
+- strings `'string'`;
+- functions `'function'`;
+- numeric values `'number'`;
+- float numbers `'float'`;
+- integer numbers `'integer'`;
+- arrays `'array'`;
+- dates (instances of Date class) `'date'`.
+
+It also makes object schema validation if a parameter is an object:
+
+<pre>var sumObj = function (o1, o2) {
+    return o1.a + o1.b.c + o1.b.d + o2.a + o2.b.c + o2.b.d;
+}
+.expects({
+        a: 'float',
+        b:{
+            c:'float',
+            d:'float'
+        }
+    }, {
+        a:'integer',
+        b: {
+            c: 'integer',
+            d: 'integer'
+        }
+    })
+.returns('float');</pre>
+
+You are able to set validation function for each parameter instead of string value:
+
+<pre>var enc = function (a) {
+    return a + 1;
+}
+.expects(function(parameter) {
+    return value > 0
+});
+var b = enc(2);</pre>
+
+### Extending Undertake
+
+If you need to extend existing list of parameters or change validation rules, you can call `Undertake.Types.set`:
+
+<pre>Undertake.Types.add(
+    'positiveNumber',
+    function(value) {return value > 0;}
+);
+var enc = function (a) {
+    return a + 1;
+}
+.expects('positiveNumber');
+var b = enc(2);</pre>
+
+## Undertake API list
+
+- `Undertake` A main object.
+ - `expects`
+ - `returns`
+ - `Validator` provides with validation functions:
+    - `isNumber(value)`
+    - `isString(value)`
+    - `isFunction(value)`
+    - `isInteger(value)`
+    - `isFloat(value)`
+    - `isArray(value)`
+    - `isDate(value)`
+ - `Types` helps to make type manipulations:
+  - `set(typeName, callbackFunction)`
+  - `get(typeName)` returns function
