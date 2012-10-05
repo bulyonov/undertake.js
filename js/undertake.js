@@ -29,7 +29,7 @@ var Undertake = (function () {
         }
     };
 
-    var types = {
+    var typeList = {
         'number': Validator.isNumber,
         'string': Validator.isString,
         'function': Validator.isFunction,
@@ -39,21 +39,29 @@ var Undertake = (function () {
         'array': Validator.isArray
     };
 
+    var Types = {
+        set: function (typeName, checkFunction) {
+            typeList[typeName] = checkFunction;
+        },
+        get: function (typeName) {
+            return typeList[typeName];
+        }
+    };
+
     Function.prototype.expects = function () {
         return expects(this, arguments);
     };
 
-    Function.prototype.returns = function (resultCheck) {
-        return returns(this, resultCheck);
+    Function.prototype.returns = function (returnedResult) {
+        return returns(this, returnedResult);
     };
-
 
     function validateSingleParam(actual, characteristic) {
         var result = false;
         var type = typeof characteristic;
         switch (type) {
             case 'string':
-                result = types[characteristic] && types[characteristic](actual);
+                result = typeList[characteristic] && typeList[characteristic](actual);
                 break;
             case 'function':
                 result = characteristic(actual);
@@ -95,29 +103,52 @@ var Undertake = (function () {
         return result;
     }
 
-    function expects(fn, expectedArguments) {
-        return function () {
-            var actualArguments = arguments;
-            if (!validateArray(actualArguments, expectedArguments)) {
-                throw Error('Parameters are invalid');
-            }
-            return fn.apply(this, arguments);
-        };
+    function getContext(fn) {
+        var originalFunction = fn.original || fn;
+        if (!originalFunction.context) {
+            originalFunction.context = {};
+        }
+        return originalFunction.context;
     }
 
-    function returns(fn, resultCheck) {
-        return function () {
-            var result = fn.apply(this, arguments);
-            if (!validateSingleParam(result, resultCheck)) {
-                throw Error('Result is invalid');
+    function getContextCall(fn) {
+        var originalFunction = fn.original || fn;
+        var contextCall = function() {
+            if (originalFunction.context && originalFunction.context.expected) {
+                var actualArguments = arguments;
+                var expectedArguments = originalFunction.context.expected;
+                if (!validateArray(actualArguments, expectedArguments)) {
+                    throw Error('Parameters are invalid');
+                }
             }
-            return result;
-        };
+            var result = originalFunction.apply(this, arguments);
+            if (originalFunction.context && originalFunction.context.returned) {
+                var returnedResult = originalFunction.context.returned;
+                if (!validateSingleParam(result, returnedResult)) {
+                    throw Error('Result is invalid');
+                }
+            }
+        }
+        contextCall.original = originalFunction;
+        return contextCall;
+    }
+
+    function expects(fn, expectedArguments) {
+        var context = getContext(fn);
+        context.expected = expectedArguments;
+        return getContextCall(fn);
+    }
+
+    function returns(fn, returnedArguments) {
+        var context = getContext(fn);
+        context.returned = returnedArguments;
+        return getContextCall(fn);
     }
 
 
     return {
         Validator: Validator,
+        Types: Types,
         expects: expects,
         returns: returns
     };

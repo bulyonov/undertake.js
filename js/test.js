@@ -4,6 +4,10 @@ var sum = function (a,b) {
 .expects('integer', 'float')
 .returns('float');
 
+sum(1,1.1); // correct
+sum(1,'1'); // incorrect
+
+
 var addDay = function (d) {
     var day = d.getDate();
     d.setDate(day + 1);
@@ -12,14 +16,18 @@ var addDay = function (d) {
 .expects('date')
 .returns('date');
 
+addDay(new Date()); //correct
+addDay((new Date()).getTime()); // incorrect
+
+
 var sumObj = function (o1, o2) {
     return o1.a + o1.b.c + o1.b.d + o2.a + o2.b.c + o2.b.d;
 }
 .expects({
-        a:'float',
-        b: {
-            c: 'float',
-            d: 'float'
+        a: 'float',
+        b:{
+            c:'float',
+            d:'float'
         }
     }, {
         a:'integer',
@@ -29,14 +37,6 @@ var sumObj = function (o1, o2) {
         }
     })
 .returns('float');
-
-
-sum(1,1.1); // correct
-sum(1,'1'); // incorrect
-
-addDay(new Date()); //correct
-addDay((new Date()).getTime()); // incorrect
-
 
 sumObj({
     a: 1.1,
