@@ -26,7 +26,7 @@ It can be easily extended by other types.
 
 ### Validate function parameters
 
-You can validate function parameters by calling `expect` method from function prototype or by using `Undertake.expect`. Both calls are equal.
+You can validate function parameters by calling `expects` method from function prototype or by using `Undertake.expects`. Both calls are equal.
 
 <pre>var sum = function (a,b) {
     return a + b;
@@ -37,7 +37,7 @@ sum(1.1, 2.2);</pre>
 <pre>function sum (a,b) {
     return a + b;
 }
-var newSum = Undertake.expect(sum, ['float','float']);
+var newSum = Undertake.expects(sum, ['float','float']);
 newSum(1.1, 2.2);</pre>
 
 ### Validate function results
